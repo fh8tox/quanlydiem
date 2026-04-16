@@ -2,31 +2,72 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Tên bảng (không bắt buộc vì Laravel tự hiểu)
      */
-    protected function casts(): array
+    protected $table = 'users';
+
+    /**
+     * Các field cho phép gán hàng loạt
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role'
+    ];
+
+    /**
+     * Ẩn khi trả về JSON
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Ép kiểu dữ liệu
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    // =========================
+    // RELATIONSHIPS
+    // =========================
+
+    /**
+     * 1 user là 1 student
+     */
+    public function student()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasOne(Student::class, 'user_id');
+    }
+
+    // =========================
+    // HELPER FUNCTIONS (PHÂN QUYỀN)
+    // =========================
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isTeacher()
+    {
+        return $this->role === 'teacher';
+    }
+
+    public function isStudent()
+    {
+        return $this->role === 'student';
     }
 }
