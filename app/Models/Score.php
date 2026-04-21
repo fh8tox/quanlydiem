@@ -12,7 +12,6 @@ class Score extends Model
         'semester',
         'chuyen_can',
         'giua_ky',
-        'thuc_hanh',
         'cuoi_ky',
         'tong_ket',
         'xep_loai'

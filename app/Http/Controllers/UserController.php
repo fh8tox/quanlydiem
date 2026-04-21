@@ -18,39 +18,45 @@ class UserController extends Controller
 
     // ===== FORM CREATE =====
     public function create()
-{
-    $students = Student::whereNull('user_id')->get();
-    return view('users.create', compact('students'));
-}
+    {
+        $students = Student::whereNull('user_id')->get();
+        return view('users.create', compact('students'));
+    }
 
     // ===== LƯU =====
     public function store(Request $request)
     {
         $request->validate([
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:3',
+            'password' => 'required|min:6',
             'role' => 'required',
             'student_id' => 'nullable|exists:students,id'
         ]);
 
         try {
-            // tạo user
-            $user = User::create([
-                'email' => $request->email,
-                'password' => $request->password, // nếu muốn bảo mật: Hash::make()
-                'role' => $request->role,
-            ]);
+            $name = null;
 
-            // nếu chọn student → gán user_id
+            // 🔥 nếu có chọn student → lấy tên
             if ($request->student_id) {
-
                 $student = Student::find($request->student_id);
 
-                // ❌ nếu đã có tài khoản rồi thì chặn
                 if ($student->user_id) {
                     return back()->with('error', 'Sinh viên này đã có tài khoản!');
                 }
 
+                $name = $student->name;
+            }
+
+            // ✅ HASH PASSWORD (QUAN TRỌNG)
+            $user = User::create([
+                'name' => $name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password), // 🔥 FIX
+                'role' => $request->role,
+            ]);
+
+            // gán user_id cho student
+            if ($request->student_id) {
                 $student->user_id = $user->id;
                 $student->save();
             }
@@ -88,21 +94,29 @@ class UserController extends Controller
                 'role' => $request->role,
             ];
 
+            // 🔥 nếu có đổi password → hash
             if ($request->password) {
-                $data['password'] = $request->password;
+                $data['password'] = Hash::make($request->password);
             }
-
-            $user->update($data);
 
             // reset student cũ
             Student::where('user_id', $user->id)->update(['user_id' => null]);
 
-            // gán lại student mới
+            // gán lại student mới + cập nhật name
             if ($request->student_id) {
                 $student = Student::find($request->student_id);
+
+                if ($student->user_id && $student->user_id != $user->id) {
+                    return back()->with('error', 'Sinh viên này đã có tài khoản!');
+                }
+
                 $student->user_id = $user->id;
                 $student->save();
+
+                $data['name'] = $student->name; // 🔥 FIX NAME
             }
+
+            $user->update($data);
 
             return redirect()->route('users.index')
                 ->with('success', 'Cập nhật thành công');

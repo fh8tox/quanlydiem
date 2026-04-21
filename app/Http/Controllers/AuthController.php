@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -22,14 +23,16 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || $user->password != $request->password) {
+        // ❌ sai: so sánh trực tiếp
+        // ✅ đúng: dùng Hash::check
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return back()->with('error', 'Sai tài khoản hoặc mật khẩu');
         }
 
         // ✅ LOGIN
         Auth::login($user);
 
-        // 🔥 FIX CHÍNH Ở ĐÂY
+        // redirect theo role
         if ($user->role === 'admin') {
             return redirect('/admin');
         }
@@ -42,7 +45,6 @@ class AuthController extends Controller
             return redirect('/student');
         }
 
-        // fallback
         return redirect('/login');
     }
 

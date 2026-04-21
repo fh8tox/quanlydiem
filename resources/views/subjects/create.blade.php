@@ -2,35 +2,41 @@
 
 @section('content')
 
-<h2>Thêm môn học</h2>
+<h2>➕ Thêm môn học</h2>
 
 @if(session('error'))
     <p style="color:red">{{ session('error') }}</p>
 @endif
 
+<div class="card">
+
 <form method="POST" action="{{ route('subjects.store') }}">
     @csrf
 
-    <input type="text" name="ma_mon" placeholder="Mã môn" value="{{ old('ma_mon') }}">
+    <label>Mã môn</label>
+    <input type="text" name="ma_mon" value="{{ old('ma_mon') }}">
     @error('ma_mon')
         <p style="color:red">{{ $message }}</p>
     @enderror
-    <br><br>
 
-    <input type="text" name="ten_mon" placeholder="Tên môn" value="{{ old('ten_mon') }}">
+    <label>Tên môn</label>
+    <input type="text" name="ten_mon" value="{{ old('ten_mon') }}">
     @error('ten_mon')
         <p style="color:red">{{ $message }}</p>
     @enderror
-    <br><br>
 
-    <input type="number" name="so_tin_chi" placeholder="Số tín chỉ" value="{{ old('so_tin_chi') }}">
+    <label>Số tín chỉ</label>
+    <input type="number" name="so_tin_chi" value="{{ old('so_tin_chi') }}">
     @error('so_tin_chi')
         <p style="color:red">{{ $message }}</p>
     @enderror
-    <br><br>
 
-    <button type="submit">Lưu</button>
-    <a href="{{ route('subjects.index') }}">⬅ Quay lại</a>
+    <br>
+
+    <button class="btn btn-primary">💾 Lưu</button>
+    <a href="{{ route('subjects.index') }}" class="btn">⬅ Quay lại</a>
 </form>
+
+</div>
 
 @endsection

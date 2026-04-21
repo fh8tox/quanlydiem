@@ -8,6 +8,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminDashboardController;
 
 // ===== HOME =====
 Route::get('/', function () {
@@ -39,13 +40,11 @@ Route::middleware(['check.login'])->group(function () {
 
     // ===== 🔥 ADMIN ONLY =====
     Route::middleware(['role:admin'])->group(function () {
-
-        // CRUD chính
+        Route::get('/admin', [AdminDashboardController::class, 'adminDashboard']);
         Route::resource('departments', DepartmentController::class);
         Route::resource('classes', ClassController::class);
         Route::resource('subjects', SubjectController::class);
         Route::resource('users', UserController::class);
-
     });
 
 
@@ -54,6 +53,7 @@ Route::middleware(['check.login'])->group(function () {
 
         Route::resource('students', StudentController::class);
         Route::resource('scores', ScoreController::class);
+
     });
 
 

@@ -10,20 +10,43 @@ use Illuminate\Support\Facades\Auth;
 
 class ScoreController extends Controller
 {
-    public function index()
+    // ===== LIST + FILTER (GET) =====
+    public function index(Request $request)
     {
-        $scores = Score::with(['student', 'subject'])->latest()->get();
-        return view('scores.index', compact('scores'));
-    }
-
-    public function create()
-    {
-        $students = Student::all();
+        $classes = \App\Models\Classes::all();
         $subjects = Subject::all();
 
-        return view('scores.create', compact('students', 'subjects'));
+        $scores = collect(); // mặc định rỗng
+
+        if ($request->class_id && $request->subject_id) {
+
+            $scores = Score::with(['student', 'subject'])
+                ->where('subject_id', $request->subject_id)
+                ->whereHas('student', function ($q) use ($request) {
+                    $q->where('class_id', $request->class_id);
+                })
+                ->latest()
+                ->get();
+        }
+
+        return view('scores.index', compact('scores', 'classes', 'subjects'));
     }
 
+    // ===== CREATE =====
+    public function create(Request $request)
+    {
+        $class_id = $request->class_id;
+        $subject_id = $request->subject_id;
+
+        // chỉ lấy sinh viên trong lớp đã chọn
+        $students = Student::where('class_id', $class_id)->get();
+
+        $subject = Subject::find($subject_id);
+
+        return view('scores.create', compact('students', 'subject', 'class_id', 'subject_id'));
+    }
+
+    // ===== STORE =====
     public function store(Request $request)
     {
         $request->validate([
@@ -37,7 +60,6 @@ class ScoreController extends Controller
 
             'chuyen_can' => 'nullable|numeric|min:0|max:10',
             'giua_ky' => 'nullable|numeric|min:0|max:10',
-            'thuc_hanh' => 'nullable|numeric|min:0|max:10',
             'cuoi_ky' => 'nullable|numeric|min:0|max:10',
         ]);
 
@@ -51,7 +73,6 @@ class ScoreController extends Controller
                 'semester' => $request->semester,
                 'chuyen_can' => $request->chuyen_can,
                 'giua_ky' => $request->giua_ky,
-                'thuc_hanh' => $request->thuc_hanh,
                 'cuoi_ky' => $request->cuoi_ky,
                 'tong_ket' => $tong_ket,
                 'xep_loai' => $xep_loai
@@ -65,6 +86,7 @@ class ScoreController extends Controller
         }
     }
 
+    // ===== EDIT (CHỈ SỬA 1 RECORD) =====
     public function edit($id)
     {
         $score = Score::findOrFail($id);
@@ -74,6 +96,7 @@ class ScoreController extends Controller
         return view('scores.edit', compact('score', 'students', 'subjects'));
     }
 
+    // ===== UPDATE =====
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -87,7 +110,6 @@ class ScoreController extends Controller
 
             'chuyen_can' => 'nullable|numeric|min:0|max:10',
             'giua_ky' => 'nullable|numeric|min:0|max:10',
-            'thuc_hanh' => 'nullable|numeric|min:0|max:10',
             'cuoi_ky' => 'nullable|numeric|min:0|max:10',
         ]);
 
@@ -103,7 +125,6 @@ class ScoreController extends Controller
                 'semester' => $request->semester,
                 'chuyen_can' => $request->chuyen_can,
                 'giua_ky' => $request->giua_ky,
-                'thuc_hanh' => $request->thuc_hanh,
                 'cuoi_ky' => $request->cuoi_ky,
                 'tong_ket' => $tong_ket,
                 'xep_loai' => $xep_loai
@@ -117,6 +138,7 @@ class ScoreController extends Controller
         }
     }
 
+    // ===== DELETE =====
     public function destroy($id)
     {
         try {
@@ -130,46 +152,102 @@ class ScoreController extends Controller
         }
     }
 
-    // ================== STUDENT VIEW ==================
+    // ===== STUDENT VIEW =====
     public function myScores()
-        {
-            $user = Auth::user(); // ✅ dùng Auth
+    {
+        $student = auth()->user()->student;
 
-            if (!$user) {
-                return redirect('/login');
+        $scores = \App\Models\Score::with('subject')
+            ->where('student_id', $student->id)
+            ->get();
+
+        // ===== TÍNH GPA =====
+        $totalCredits = 0;
+        $totalPoint4 = 0;
+        $totalPoint10 = 0;
+
+        $retake = 0;
+        $relearn = 0;
+        $pending = 0;
+
+        foreach ($scores as $s) {
+
+            // nếu chưa có điểm thì bỏ qua
+            if ($s->tong_ket === null) {
+                $pending++;
+                continue;
             }
 
-            $student = Student::where('user_id', $user->id)->first();
+            $credit = $s->subject->so_tin_chi ?? 0;
 
-            if (!$student) {
-                return back()->with('error', 'Không tìm thấy sinh viên');
-            }
+            // đổi sang thang 4
+            $point4 = match ($s->xep_loai) {
+                'A+' => 4,
+                'A'  => 3.7,
+                'B+' => 3.5,
+                'B'  => 3,
+                'C+' => 2.5,
+                'C'  => 2,
+                'D'  => 1,
+                'F'  => 0,
+                default => 0
+            };
 
-            $scores = Score::with('subject')
-                ->where('student_id', $student->id)
-                ->get();
+            // cộng dồn
+            $totalCredits += $credit;
+            $totalPoint4 += $point4 * $credit;
+            $totalPoint10 += $s->tong_ket * $credit;
 
-            return view('scores.my-scores', compact('scores'));
+            // thống kê
+            if ($s->xep_loai == 'F') $relearn++;
+            if ($s->xep_loai == 'D') $retake++;
         }
 
-    // ================== LOGIC ==================
+        // tránh chia 0
+        $gpa4 = $totalCredits ? round($totalPoint4 / $totalCredits, 2) : 0;
+        $gpa10 = $totalCredits ? round($totalPoint10 / $totalCredits, 2) : 0;
 
+        // xếp loại
+        $rank = match (true) {
+            $gpa4 >= 3.6 => 'Xuất sắc',
+            $gpa4 >= 3.2 => 'Giỏi',
+            $gpa4 >= 2.5 => 'Khá',
+            $gpa4 >= 2.0 => 'Trung bình',
+            default => 'Yếu'
+        };
+
+        return view('scores.my-scores', compact(
+            'scores',
+            'gpa4',
+            'gpa10',
+            'rank',
+            'totalCredits',
+            'retake',
+            'relearn',
+            'pending'
+        ));
+    }
+
+    // ===== LOGIC =====
     private function tinhTongKet($r)
     {
         return round(
             ($r->chuyen_can ?? 0) * 0.1 +
             ($r->giua_ky ?? 0) * 0.2 +
-            ($r->thuc_hanh ?? 0) * 0.2 +
-            ($r->cuoi_ky ?? 0) * 0.5
+            ($r->cuoi_ky ?? 0) * 0.7
         , 2);
     }
 
     private function xepLoai($tk)
     {
+        if ($tk >= 9.0) return 'A+';
         if ($tk >= 8.5) return 'A';
-        if ($tk >= 7) return 'B';
+        if ($tk >= 8.0) return 'B+';
+        if ($tk >= 7.0) return 'B';
+        if ($tk >= 6.5) return 'C+';
         if ($tk >= 5.5) return 'C';
-        if ($tk >= 4) return 'D';
+        if ($tk >= 5.0) return 'D+';
+        if ($tk >= 4.0) return 'D';
         return 'F';
     }
 }

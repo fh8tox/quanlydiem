@@ -2,21 +2,21 @@
 
 @section('content')
 
-<h2>Danh sách môn học</h2>
+<h2>📘 Danh sách môn học</h2>
 
-<a href="{{ route('subjects.create') }}">+ Thêm môn học</a>
+<a href="{{ route('subjects.create') }}" class="btn btn-primary">+ Thêm môn học</a>
 
 @if(session('success'))
-    <p style="color: green">{{ session('success') }}</p>
+    <p style="color:green">{{ session('success') }}</p>
 @endif
 
 @if(session('error'))
-    <p style="color: red">{{ session('error') }}</p>
+    <p style="color:red">{{ session('error') }}</p>
 @endif
 
-<br><br>
+<div class="card">
 
-<table border="1" width="100%">
+<table>
     <tr>
         <th>ID</th>
         <th>Mã môn</th>
@@ -25,23 +25,30 @@
         <th>Hành động</th>
     </tr>
 
-    @foreach($subjects as $s)
+    @forelse($subjects as $s)
     <tr>
         <td>{{ $s->id }}</td>
         <td>{{ $s->ma_mon }}</td>
         <td>{{ $s->ten_mon }}</td>
         <td>{{ $s->so_tin_chi }}</td>
         <td>
-            <a href="{{ route('subjects.edit', $s->id) }}">Sửa</a>
+            <a href="{{ route('subjects.edit', $s->id) }}" class="btn btn-success">✏️ Sửa</a>
 
             <form action="{{ route('subjects.destroy', $s->id) }}" method="POST" style="display:inline">
                 @csrf
                 @method('DELETE')
-                <button onclick="return confirm('Xóa?')">Xóa</button>
+                <button class="btn btn-danger" onclick="return confirm('Xóa môn này?')">🗑 Xóa</button>
             </form>
         </td>
     </tr>
-    @endforeach
+    @empty
+    <tr>
+        <td colspan="5" style="text-align:center">Không có dữ liệu</td>
+    </tr>
+    @endforelse
+
 </table>
+
+</div>
 
 @endsection

@@ -2,38 +2,53 @@
 
 @section('content')
 
-<h2>Tạo tài khoản</h2>
+<h2>➕ Tạo tài khoản</h2>
+
+@if(session('error'))
+    <p style="color:red">{{ session('error') }}</p>
+@endif
+
+<div class="card">
 
 <form method="POST" action="{{ route('users.store') }}">
     @csrf
 
-    <input type="email" name="email" placeholder="Email"><br><br>
-    <input type="password" name="password" placeholder="Password"><br><br>
+    <label>Email</label>
+    <input type="email" name="email" value="{{ old('email') }}">
+    @error('email') <p style="color:red">{{ $message }}</p> @enderror
 
+    <label>Password</label>
+    <input type="password" name="password">
+    @error('password') <p style="color:red">{{ $message }}</p> @enderror
+
+    <label>Role</label>
     <select name="role" id="role">
-        <option value="">-- Role --</option>
-        <option value="admin">Admin</option>
-        <option value="teacher">Teacher</option>
-        <option value="student">Student</option>
+        <option value="">-- Chọn role --</option>
+        <option value="admin" {{ old('role')=='admin'?'selected':'' }}>Admin</option>
+        <option value="teacher" {{ old('role')=='teacher'?'selected':'' }}>Teacher</option>
+        <option value="student" {{ old('role')=='student'?'selected':'' }}>Student</option>
     </select>
 
-    <br><br>
-
-    <div id="student-box" style="display:none;">
-        <select name="student_id">
+    <div id="student-box" style="{{ old('role')=='student' ? '' : 'display:none;' }}">
+        <label>Chọn sinh viên</label>
+        <select name="student_id" class="select2">
             <option value="">-- Chọn sinh viên --</option>
             @foreach($students as $s)
-                <option value="{{ $s->id }}">
-                    {{ $s->name }}
+                <option value="{{ $s->id }}" {{ old('student_id')==$s->id?'selected':'' }}>
+                    {{ $s->name }} ({{ $s->ma_sv }})
                 </option>
             @endforeach
         </select>
     </div>
 
-    <br><br>
+    <br>
 
-    <button>Tạo</button>
+    <button class="btn btn-primary">💾 Tạo</button>
+    <a href="{{ route('users.index') }}" class="btn">⬅ Quay lại</a>
+
 </form>
+
+</div>
 
 <script>
 document.getElementById('role').addEventListener('change', function () {
