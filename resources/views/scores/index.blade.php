@@ -4,10 +4,9 @@
 
 <h2>📊 Quản lý điểm</h2>
 
-@if(request('class_id') && request('subject_id'))
+@if(request('course_class_id'))
     <a href="{{ route('scores.create', [
-        'class_id' => request('class_id'),
-        'subject_id' => request('subject_id')
+        'course_class_id' => request('course_class_id')
     ]) }}" class="btn btn-success">
         + Thêm điểm
     </a>
@@ -26,42 +25,30 @@
 <div class="card">
 
 <form method="GET">
-    <select name="class_id" required>
-        <option value="">-- Chọn lớp --</option>
-        @foreach($classes as $c)
-            <option value="{{ $c->id }}"
-                {{ request('class_id') == $c->id ? 'selected' : '' }}>
-                {{ $c->name }}
-            </option>
-        @endforeach
-    </select>
-
-    <select name="subject_id" required>
-        <option value="">-- Chọn môn --</option>
-        @foreach($subjects as $sub)
-            <option value="{{ $sub->id }}"
-                {{ request('subject_id') == $sub->id ? 'selected' : '' }}>
-                {{ $sub->ten_mon }}
+    <select name="course_class_id" required>
+        <option value="">-- Chọn lớp học phần --</option>
+        @foreach($courseClasses as $cc)
+            <option value="{{ $cc->id }}"
+                {{ request('course_class_id') == $cc->id ? 'selected' : '' }}>
+                {{ $cc->name }} - {{ $cc->subject->ten_mon ?? '' }}
             </option>
         @endforeach
     </select>
 
     <button class="btn btn-primary">Xem</button>
-    <a href="{{ route('scores.index') }}" class="btn btn-reset">🔄Reset</a>
+    <a href="{{ route('scores.index') }}" class="btn btn-reset">🔄 Reset</a>
 </form>
 
 <hr>
 
-@if(!request('class_id') || !request('subject_id'))
-    <p style="color:gray">👉 Hãy chọn lớp và môn</p>
+@if(!request('course_class_id'))
+    <p style="color:gray">👉 Hãy chọn lớp học phần</p>
 @endif
 
-@if(request('class_id') && request('subject_id'))
+@if(request('course_class_id'))
 
 <h4>
-    📚 {{ $classes->firstWhere('id', request('class_id'))->name }}
-    |
-    📘 {{ $subjects->firstWhere('id', request('subject_id'))->ten_mon }}
+    📚 {{ $courseClasses->firstWhere('id', request('course_class_id'))->name }}
 </h4>
 
 <table>

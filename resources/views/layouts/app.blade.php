@@ -222,23 +222,42 @@
 
         @if($user)
 
+            {{-- ===== ADMIN ===== --}}
             @if($user->role === 'admin')
                 <a href="/admin">🏠 <span>Dashboard</span></a>
                 <a href="/users">👤 <span>Tài khoản</span></a>
                 <a href="/students">🎓 <span>Sinh viên</span></a>
                 <a href="/departments">🏫 <span>Khoa</span></a>
                 <a href="/subjects">📘 <span>Môn học</span></a>
+                <a href="/classes">🏫 <span>Lớp hành chính</span></a>
+
                 <a href="{{ route('scores.index') }}">📊 <span>Điểm</span></a>
-                <a href="/classes">🏠 <span>Lớp</span></a>
+                <a href="{{ route('course-classes.index') }}">📚 <span>Lớp tín chỉ</span></a>
+                {{-- ✅ THÊM NÚT ĐIỂM DANH --}}
+                <a href="{{ route('attendances.index') }}">📋 <span>Điểm danh</span></a>
+
+                <a href="/change-password">🔐 <span>Đổi mật khẩu</span></a>
             @endif
 
+
+            {{-- ===== TEACHER ===== --}}
             @if($user->role === 'teacher')
-                <a href="/students">🎓 <span>Sinh viên</span></a>
+                {{-- ❌ BỎ SINH VIÊN --}}
+                {{-- <a href="/students">🎓 <span>Sinh viên</span></a> --}}
+
                 <a href="{{ route('scores.index') }}">📊 <span>Nhập điểm</span></a>
+
+                {{-- ✅ THÊM ĐIỂM DANH --}}
+                <a href="{{ route('attendances.index') }}">📋 <span>Điểm danh</span></a>
+
+                <a href="/change-password">🔐 <span>Đổi mật khẩu</span></a>
             @endif
 
+
+            {{-- ===== STUDENT ===== --}}
             @if($user->role === 'student')
                 <a href="/student/my-scores">📊 <span>Xem điểm</span></a>
+                <a href="/change-password">🔐 <span>Đổi mật khẩu</span></a>
             @endif
 
         @endif

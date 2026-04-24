@@ -10,13 +10,13 @@
 
 <div class="card">
 
-    <p><b>📚 Lớp:</b> {{ $students->first()->class->name ?? '---' }}</p>
-    <p><b>📘 Môn:</b> {{ $subject->ten_mon ?? '---' }}</p>
+    <p><b>📚 Lớp học phần:</b> {{ $courseClass->name ?? '---' }}</p>
+    <p><b>📘 Môn:</b> {{ $courseClass->subject->ten_mon ?? '---' }}</p>
 
     <form method="POST" action="{{ route('scores.store') }}">
         @csrf
 
-        <input type="hidden" name="subject_id" value="{{ $subject_id }}">
+        <input type="hidden" name="course_class_id" value="{{ $courseClass->id }}">
 
         <div>
             <label>Sinh viên</label><br>
@@ -45,8 +45,8 @@
         <br>
 
         <div>
-            <label>Chuyên cần</label><br>
-            <input type="number" step="0.1" name="chuyen_can">
+            <label>Chuyên cần (auto)</label><br>
+            <input type="number" step="0.1" disabled placeholder="Tự động tính">
         </div>
 
         <div>

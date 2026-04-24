@@ -12,32 +12,31 @@
         <div>
             <b>TBC tích luỹ (thang 4):</b><br>
             <span style="font-size:20px; color:#3498db">
-                {{ $gpa4 }}
+                {{ $gpa4 ?? 0 }}
             </span>
         </div>
 
         <div>
             <b>Xếp hạng học lực:</b><br>
             <span style="color:green; font-weight:bold">
-                {{ $rank }}
+                {{ $rank ?? '---' }}
             </span>
         </div>
 
         <div>
             <b>Số tín chỉ tích luỹ:</b><br>
-            {{ $totalCredits }}
+            {{ $totalCredits ?? 0 }}
         </div>
 
         <div>
             <b>TBC học tập (thang 10):</b><br>
-            {{ $gpa10 }}
+            {{ $gpa10 ?? 0 }}
         </div>
 
         <div>
             <b>Số môn học lại:</b><br>
-            <span style="color:red">{{ $relearn }}</span>
+            <span style="color:red">{{ $relearn ?? 0 }}</span>
         </div>
-
 
     </div>
 </div>
@@ -48,7 +47,8 @@
 
 <table>
     <tr>
-        <th>Môn</th>
+        <th>Môn học</th>
+        <th>Lớp TC</th>
         <th>HK</th>
         <th>CC</th>
         <th>GK</th>
@@ -59,11 +59,22 @@
 
     @forelse($scores as $s)
     <tr>
-        <td>{{ $s->subject->ten_mon }}</td>
+        {{-- MÔN --}}
+        <td>
+            {{ $s->subject->ten_mon ?? '---' }}
+        </td>
+
+        {{-- LỚP TÍN CHỈ --}}
+        <td>
+            {{ $s->courseClass->name ?? '---' }}
+        </td>
+
         <td>{{ $s->semester }}</td>
-        <td>{{ $s->chuyen_can }}</td>
-        <td>{{ $s->giua_ky }}</td>
-        <td>{{ $s->cuoi_ky }}</td>
+
+        <td>{{ $s->chuyen_can ?? '-' }}</td>
+        <td>{{ $s->giua_ky ?? '-' }}</td>
+        <td>{{ $s->cuoi_ky ?? '-' }}</td>
+
         <td>
             <b>{{ $s->tong_ket ?? '-' }}</b>
         </td>
@@ -73,20 +84,24 @@
                 <span style="color:green; font-weight:bold">
                     {{ $s->xep_loai }}
                 </span>
+
             @elseif(in_array($s->xep_loai, ['D', 'F']))
                 <span style="color:red; font-weight:bold">
                     {{ $s->xep_loai }}
                 </span>
+
             @elseif($s->xep_loai)
                 {{ $s->xep_loai }}
+
             @else
                 <span style="color:gray">Chưa có</span>
             @endif
         </td>
     </tr>
+
     @empty
     <tr>
-        <td colspan="7" style="text-align:center">
+        <td colspan="8" style="text-align:center">
             Chưa có điểm
         </td>
     </tr>

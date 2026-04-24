@@ -10,6 +10,8 @@
     @csrf
     @method('PUT')
 
+    <input type="hidden" name="course_class_id" value="{{ $score->course_class_id }}">
+
     <div>
         <label>Sinh viên</label><br>
         <select name="student_id" class="select2">
@@ -17,20 +19,6 @@
                 <option value="{{ $s->id }}"
                     {{ $score->student_id == $s->id ? 'selected' : '' }}>
                     {{ $s->name }} ({{ $s->ma_sv }})
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <br>
-
-    <div>
-        <label>Môn</label><br>
-        <select name="subject_id">
-            @foreach($subjects as $sub)
-                <option value="{{ $sub->id }}"
-                    {{ $score->subject_id == $sub->id ? 'selected' : '' }}>
-                    {{ $sub->ten_mon }}
                 </option>
             @endforeach
         </select>
@@ -51,7 +39,7 @@
 
     <div>
         <label>Chuyên cần</label><br>
-        <input type="number" step="0.1" name="chuyen_can" value="{{ $score->chuyen_can }}">
+        <input type="number" step="0.1" value="{{ $score->chuyen_can }}" disabled>
     </div>
 
     <div>

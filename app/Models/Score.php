@@ -8,6 +8,7 @@ class Score extends Model
 {
     protected $fillable = [
         'student_id',
+        'course_class_id',
         'subject_id',
         'semester',
         'chuyen_can',
@@ -26,4 +27,11 @@ class Score extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function courseClass()
+    {
+        return $this->belongsTo(CourseClass::class);
+    }
+
+
 }
