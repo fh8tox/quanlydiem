@@ -17,24 +17,24 @@
     <input type="text" name="ma_mon" value="{{ old('ma_mon') }}">
     @error('ma_mon')
         <p style="color:red">{{ $message }}</p>
-    @enderror
+    @enderror<br>
 
     <label>Tên môn</label>
     <input type="text" name="ten_mon" value="{{ old('ten_mon') }}">
     @error('ten_mon')
         <p style="color:red">{{ $message }}</p>
-    @enderror
+    @enderror<br>
 
     <label>Số tín chỉ</label>
     <input type="number" name="so_tin_chi" value="{{ old('so_tin_chi') }}">
     @error('so_tin_chi')
         <p style="color:red">{{ $message }}</p>
-    @enderror
+    @enderror<br>
 
     <br>
 
     <button class="btn btn-primary">💾 Lưu</button>
-    <a href="{{ route('subjects.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('subjects.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 </form>
 
 </div>

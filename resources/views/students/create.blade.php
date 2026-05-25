@@ -15,15 +15,15 @@
 
     <label>Mã sinh viên</label><br>
     <input type="text" name="ma_sv" value="{{ old('ma_sv') }}">
-    @error('ma_sv') <p style="color:red">{{ $message }}</p> @enderror
+    @error('ma_sv') <p style="color:red">{{ $message }}</p> @enderror<br>
 
     <label>Tên sinh viên</label><br>
     <input type="text" name="name" value="{{ old('name') }}">
-    @error('name') <p style="color:red">{{ $message }}</p> @enderror
+    @error('name') <p style="color:red">{{ $message }}</p> @enderror<br>
 
     <label>Email</label><br>
     <input type="email" name="email" value="{{ old('email') }}">
-    @error('email') <p style="color:red">{{ $message }}</p> @enderror
+    @error('email') <p style="color:red">{{ $message }}</p> @enderror<br>
 
     <label>Lớp</label><br>
     <select name="class_id">
@@ -38,7 +38,7 @@
     <br><br>
 
     <button class="btn btn-success">💾 Lưu</button>
-    <a href="{{ route('students.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('students.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 
 </form>
 

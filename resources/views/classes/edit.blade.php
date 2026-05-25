@@ -3,7 +3,6 @@
 @section('content')
 <div class="container">
 
-<h2>✏️ Sửa lớp</h2>
 
 @if(session('error'))
     <p class="error">{{ session('error') }}</p>
@@ -31,8 +30,8 @@
     @error('department_id') <p class="error">{{ $message }}</p> @enderror
     <br><br>
 
-    <button type="submit">💾 Cập nhật</button>
-    <a href="{{ route('classes.index') }}" class="btn">⬅ Quay lại</a>
+    <button type="submit" class="btn btn-primary px-4">💾 Cập nhật</button>
+    <a href="{{ route('classes.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 </form>
 
 </div>

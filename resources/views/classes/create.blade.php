@@ -3,11 +3,10 @@
 @section('content')
 <div class="container">
 
-<h2>➕ Thêm lớp</h2>
 
 @if(session('error'))
     <p class="error">{{ session('error') }}</p>
-@endif
+@endif<br>
 
 <form method="POST" action="{{ route('classes.store') }}">
     @csrf
@@ -29,8 +28,8 @@
     @error('department_id') <p class="error">{{ $message }}</p> @enderror
     <br><br>
 
-    <button type="submit">💾 Lưu</button>
-    <a href="{{ route('classes.index') }}" class="btn">⬅ Quay lại</a>
+    <button type="submit" class="btn btn-primary px-4">💾 Lưu</button>
+    <a href="{{ route('classes.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 </form>
 
 </div>

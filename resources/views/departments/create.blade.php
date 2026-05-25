@@ -23,7 +23,7 @@
     <br>
 
     <button type="submit" class="btn btn-success">💾 Lưu</button>
-    <a href="{{ route('departments.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('departments.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 </form>
 
 @endsection

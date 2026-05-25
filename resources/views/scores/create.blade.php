@@ -62,7 +62,7 @@
         <br>
 
         <button class="btn btn-success">💾 Lưu</button>
-        <a href="{{ route('scores.index') }}" class="btn">⬅ Quay lại</a>
+        <a href="{{ route('scores.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
     </form>
 
 </div>

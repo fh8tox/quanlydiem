@@ -24,7 +24,7 @@
     <br>
 
     <button type="submit" class="btn btn-primary">💾 Cập nhật</button>
-    <a href="{{ route('departments.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('departments.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 </form>
 
 @endsection

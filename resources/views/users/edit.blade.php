@@ -16,10 +16,10 @@
 
     <label>Email</label>
     <input type="email" name="email" value="{{ old('email', $user->email) }}">
-    @error('email') <p style="color:red">{{ $message }}</p> @enderror
+    @error('email') <p style="color:red">{{ $message }}</p> @enderror<br>
 
-    <label>Mật khẩu (để trống nếu không đổi)</label>
-    <input type="password" name="password">
+    <label>Mật khẩu</label>
+    <input placeholder="Để trống nếu không đổi mật khẩu" type="password" name="password"><br>
 
     <label>Role</label>
     <select name="role" id="role">
@@ -44,7 +44,7 @@
     <br>
 
     <button class="btn btn-success">💾 Cập nhật</button>
-    <a href="{{ route('users.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('users.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 
 </form>
 

@@ -15,11 +15,11 @@
 
     <label>Email</label>
     <input type="email" name="email" value="{{ old('email') }}">
-    @error('email') <p style="color:red">{{ $message }}</p> @enderror
+    @error('email') <p style="color:red">{{ $message }}</p> @enderror<br>
 
     <label>Password</label>
     <input type="password" name="password">
-    @error('password') <p style="color:red">{{ $message }}</p> @enderror
+    @error('password') <p style="color:red">{{ $message }}</p> @enderror<br>
 
     <label>Role</label>
     <select name="role" id="role">
@@ -44,7 +44,7 @@
     <br>
 
     <button class="btn btn-primary">💾 Tạo</button>
-    <a href="{{ route('users.index') }}" class="btn">⬅ Quay lại</a>
+    <a href="{{ route('users.index') }}" class="btn btn-primary px-4">⬅ Quay lại</a>
 
 </form>
 
